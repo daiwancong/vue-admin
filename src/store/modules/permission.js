@@ -1,7 +1,7 @@
-import { asyncRoutes, constantRoutes } from '@/router'
+import { constantRoutes } from '@/router'
 
 /**
- * Use meta.role to determine if the current user has permission
+ * 
  * @param roles
  * @param route
  */
@@ -14,8 +14,8 @@ function hasPermission(roles, route) {
 }
 
 /**
- * Filter asynchronous routing tables by recursion
- * @param routes asyncRoutes
+ * 
+ * @param routes 
  * @param roles
  */
 export function filterAsyncRoutes(routes, roles) {
