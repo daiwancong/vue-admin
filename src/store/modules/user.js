@@ -1,13 +1,9 @@
-import { login, logout, getUserInfo } from '@/api/login'
+
 import {
   getToken,
   setToken,
   removeToken,
-  setUserName,
   getUserName,
-  removeUserName,
-  setSession,
-  delSession,
   getSession
 } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
@@ -119,78 +115,19 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password, phone } = userInfo
     return new Promise((resolve, reject) => {
-      login({
-        username: username.trim(),
-        password: password,
-        phone: phone
-      })
-        .then((response) => {
-          commit('SET_TOKEN', response.token)
-          commit('SET_NAME', response.userName)
-          commit('SET_HOSPITAL', response.hospital)
-          setUserName(response.userName)
-          setToken(response.token)
-          setSession('hospital', response.hospital)
-          setSession('hospitalId', response.hospitalId)
-          commit('SET_HOSPITALID', response.hospitalId)
-          commit('SET_AVATAR', response.photo)
-          setSession('avatar', response.photo)
-          resolve(response)
-        })
-        .catch((error) => {
-          reject(error)
-        })
+    
     })
   },
 
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getUserInfo(state.token)
-        .then((res) => {
-          // menuList菜单权限permissions按钮权限
-          if (res.code === 0) {
-            const { menuList } = res
-            if (!menuList || menuList.length <= 0) {
-              Message.error('个人权限为空,请联系管理员设置')
-              resolve(menuList)
-            }
-            var menus = []
-            handleRoute(menuList, menus)
-            menus.push({ path: '*', redirect: '/404', hidden: true })
-            commit('SET_MENU', menus)
-            resolve(menuList)
-          } else {
-            reject('获取个人信息失败,请退出重新登录')
-          }
-        })
-        .catch((error) => {
-          reject(error)
-        })
+     
     })
   },
 
   logout({ commit, state, dispatch }) {
     return new Promise((resolve, reject) => {
-      logout()
-        .then((res) => {
-          commit('SET_TOKEN', '')
-          commit('SET_MENU', [])
-          commit('SET_NAME', [])
-          commit('SET_HOSPITAL', '')
-          delSession('hospital')
-          commit('SET_HOSPITALID', '')
-          delSession('hospitalId')
-          commit('SET_AVATAR', '')
-          delSession('avatar')
-          removeToken()
-          removeUserName()
-          resetRouter()
-          dispatch('tagsView/delAllViews', null, { root: true })
-          resolve()
-        })
-        .catch((error) => {
-          reject(error)
-        })
+      
     })
   },
 
