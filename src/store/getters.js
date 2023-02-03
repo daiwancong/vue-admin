@@ -14,6 +14,6 @@ const getters = {
   submitStatus: state => state.sys.submitStatus,
   menuList: state => state.user.menuList,
   menus: state => state.user.menus,
-  permissions: state => state.user.permissions
+  routeList: state => state.user.routeList
 }
 export default getters

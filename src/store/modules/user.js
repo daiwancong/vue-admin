@@ -1,14 +1,17 @@
 
 import {
+  setSession,
+  delSession,
   getSession
 } from '@/utils/common/index'
-import router, { resetRouter } from '@/router'
+import { adminRoute } from '@/api/admin'
+import { userRoute } from '@/api/user'
 const state = {
-  token: '',
+  token: getSession('token'),
   name: '',
   avatar: '',
-  menus: [], // 侧边栏结构
-  permissions: [] // 页面按钮权限
+  menus: getSession('menu'), // 侧边栏结构
+  routeList: [] // 登陆的动态路由权限
 }
 
 const mutations = {
@@ -27,59 +30,68 @@ const mutations = {
   SET_MENU: (state, menus) => {
     state.menus = menus
   },
-  SET_PERMISSIONS: (state, permissions) => {
-    state.permissions = permissions
+  SET_ROUTELIST: (state, routeList) => {
+    state.routeList = routeList
   }
 }
 
 const actions = {
-  sethospitalId({ commit }, data) {
-    commit('SET_HOSPITALID', data)
-  },
   login({ commit }, userInfo) {
-    const { username, password, phone } = userInfo
+    const { username, password } = userInfo
+    // 该权限是登陆时候后端返回，此处我用静态数据模拟
+    let menu = userRoute
+    if (username === 'admin') {
+      menu = adminRoute
+    }
     return new Promise((resolve, reject) => {
-
+      // 请求接口进行登陆
+      menu = handleMenu(menu)
+      commit('SET_TOKEN', '接口请求得到的token')
+      commit('SET_MENU', menu)
+      setSession('menu', menu)
+      setSession('token', '接口请求得到的token')
+      resolve()
     })
   },
-
+  // 查看登录信息
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
 
     })
   },
-
+  // 退出
   logout({ commit, state, dispatch }) {
     return new Promise((resolve, reject) => {
-
+      // 请求退出接口成功才执行
+      commit('SET_TOKEN', '')
+      commit('SET_MENU', [])
+      delSession('token')
+      delSession('menu')
+      resolve()
     })
   },
-
+  // 重置登录信息
   resetToken({ commit }) {
     return new Promise((resolve) => {
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
-      removeToken()
       resolve()
     })
-  },
-
-  async changeRoles({ commit, dispatch }, role) {
-    const token = role + '-token'
-
-    commit('SET_TOKEN', token)
-    setToken(token)
-
-    const { menuList } = await dispatch('getInfo')
-    resetRouter()
-    const accessRoutes = await dispatch('permission/generateRoutes', menuList, {
-      root: true
-    })
-    router.addRoutes(accessRoutes)
-    dispatch('tagsView/delAllViews', null, { root: true })
   }
+
 }
 
+function handleMenu(menu) {
+  const menuList = menu.map(item => {
+    return {
+      id: item.name,
+      path: item.path,
+      meta: { title: item.name, icon: item.icon },
+      children: item.children && item.children.length > 0 ? handleMenu(item.children) : []
+    }
+  })
+  return menuList
+}
 export default {
   namespaced: true,
   state,

@@ -8,15 +8,6 @@ export function getDictCategory(category) {
   })
 }
 
-// 介绍人 ?hospitalId= 医生护士-患者
-export function getAllUser(type) {
-  return request({
-    url: '/staff/customer/getAllUser',
-    method: 'post',
-    params: type
-  })
-}
-
 // 随访保存接口数据
 export function followUpdata(data) {
   return request({

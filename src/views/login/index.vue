@@ -5,22 +5,8 @@
       <div class="title-container">
         <h3 class="title">{{ userName }}</h3>
       </div>
-      <el-form-item v-show="!userLoginAdmin" prop="username">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input
-          ref="phone"
-          v-model="loginForm.phone"
-          placeholder="手机号登录"
-          name="phone"
-          type="text"
-          tabindex="1"
-          autocomplete="off"
-        />
-      </el-form-item>
 
-      <el-form-item v-show="userLoginAdmin" prop="username">
+      <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
@@ -35,7 +21,7 @@
         />
       </el-form-item>
 
-      <el-tooltip v-show="userLoginAdmin" v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
+      <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
         <el-form-item prop="password">
           <span class="svg-container">
             <svg-icon icon-class="password" />
@@ -58,31 +44,26 @@
           </span>
         </el-form-item>
       </el-tooltip>
-      <!-- <el-link icon="el-icon-user-solid" style="float:right;margin-bottom:5px" @click="userToggle">{{ userName1 }}</el-link> -->
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
     </el-form>
   </div>
 </template>
 
 <script>
-import { usernameRules, mobileRules } from '@/utils/efficacy-rule'
+import { usernameRules } from '@/utils/efficacy-rule'
 export default {
   name: 'Login',
   components: {},
   data() {
     return {
-      userLoginAdmin: true, // true用户登录  false 患者登录
-      userName1: '患者登录',
       userName: '用户登录',
       loginForm: {
         username: '',
-        password: '',
-        phone: ''
+        password: ''
       },
       loginRules: { // 表单验证规则
-        username: [{ required: true, trigger: 'blur', validator: usernameRules }],
+        username: [{ required: true, trigger: 'blur', validator: usernameRules }]
         // password: [{ required: true, trigger: 'blur', validator: passwordRules }],
-        phone: [{ required: false, trigger: 'blur', validator: mobileRules }]
       },
       passwordType: 'password',
       capsTooltip: false,
@@ -90,20 +71,17 @@ export default {
       redirect: undefined
     }
   },
-  created() {
-    // window.addEventListener('storage', this.afterQRScan)
-  },
-  mounted() {
-    if (this.loginForm.username === '') {
-      this.$refs.username.focus()
-    } else if (this.loginForm.password === '') {
-      this.$refs.password.focus()
-    } else if (this.loginForm.phone === '') {
-      this.$refs.phone.focus()
+  watch: {
+    $route: {
+      handler: function(route) {
+        const query = route.query
+        if (query) {
+          this.redirect = query.redirect
+          this.otherQuery = this.getOtherQuery(query)
+        }
+      },
+      immediate: true
     }
-  },
-  destroyed() {
-    // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
     checkCapslock(e) {
@@ -122,8 +100,22 @@ export default {
     },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
-        this.$router.push({ path: '/' })
-        this.loading = false
+        if (valid) {
+          this.loading = true
+          this.$store
+            .dispatch('user/login', this.loginForm)
+            .then(() => {
+              this.$router.push({ path: this.redirect || '/' })
+              this.loading = false
+            })
+            .catch(() => {
+              this.loading = false
+            })
+        } else {
+          console.log('error submit!!')
+          this.loading = false
+          return false
+        }
       })
     },
     getOtherQuery(query) {

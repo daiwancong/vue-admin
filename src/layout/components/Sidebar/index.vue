@@ -31,11 +31,13 @@ export default {
       'sidebar'
     ]),
     routes() {
-      return this.$router.options.routes
+      // 直接用route文件中的路由
+      // return this.$router.options.routes
+      // 用权限处理过后的路由
+      return this.$store.getters.menus
     },
     activeMenu() {
       const route = this.$route
-      console.log(route)
       const { meta, path } = route
       if (meta.activeMenu) {
         return meta.activeMenu

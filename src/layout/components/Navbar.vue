@@ -29,9 +29,6 @@
           <router-link to="/Profile/profile">
             <el-dropdown-item>个人说明</el-dropdown-item>
           </router-link>
-          <router-link to="/">
-            <el-dropdown-item>{{ hospital }}</el-dropdown-item>
-          </router-link>
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">退出</span>
           </el-dropdown-item>
@@ -62,7 +59,6 @@ export default {
       'sidebar',
       'name',
       'device',
-      'hospital',
       'avatar'
     ])
   },

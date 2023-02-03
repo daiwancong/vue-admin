@@ -48,19 +48,6 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/a',
-    component: Layout,
-    redirect: '/dashboard',
-    children: [
-      {
-        path: 'dashboard',
-        component: () => import('@/views/profile/index'),
-        name: 'Dashboard',
-        meta: { title: '首页2', icon: 'dashboard' }
-      }
-    ]
-  },
 
   {
     path: '/profile', // 个人说明页面
