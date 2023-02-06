@@ -12,13 +12,13 @@ export const adminRoute = [
         component: 'menu',
         icon: 'menu',
         name: '菜单管理',
-        path: '/menu'
+        path: '/sys/menu'
       },
       {
         component: 'log',
         icon: 'log',
         name: '系统日志',
-        path: '/log'
+        path: '/sys/log'
       }
     ]
   },
@@ -29,16 +29,16 @@ export const adminRoute = [
     path: '/basic',
     children: [
       {
-        component: 'user',
+        component: 'users',
         icon: 'admin',
         name: '用户信息',
-        path: '/user'
+        path: '/basic/users'
       },
       {
         component: 'role',
         icon: 'role',
         name: '角色管理',
-        path: '/role'
+        path: '/basic/role'
       }
     ]
   }

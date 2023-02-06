@@ -6,6 +6,10 @@ import {
 } from '@/utils/common/index'
 import { adminRoute } from '@/api/admin'
 import { userRoute } from '@/api/user'
+import { addRoute } from '@/api/addRoute'
+import { constantRoutes } from '@/router/index'
+import Layout from '@/layout'
+const _import = require('@/router/_import_' + process.env.NODE_ENV) // 获取组件的方法
 const state = {
   token: getSession('token'),
   name: '',
@@ -45,6 +49,8 @@ const actions = {
     }
     return new Promise((resolve, reject) => {
       // 请求接口进行登陆
+      // 将动态路由目录加入
+      menu.push(...addRoute)
       menu = handleMenu(menu)
       commit('SET_TOKEN', '接口请求得到的token')
       commit('SET_MENU', menu)
@@ -56,7 +62,13 @@ const actions = {
   // 查看登录信息
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-
+      // 请求接口重新获取动态路由信息
+      const projectList = filterAsyncRouter(addRoute)
+      const routeList = constantRoutes
+      routeList.push(...projectList)
+      routeList.push({ path: '*', redirect: '/404', hidden: true })
+      commit('SET_ROUTELIST', routeList)
+      resolve()
     })
   },
   // 退出
@@ -65,8 +77,10 @@ const actions = {
       // 请求退出接口成功才执行
       commit('SET_TOKEN', '')
       commit('SET_MENU', [])
+      commit('SET_ROUTELIST', [])
       delSession('token')
       delSession('menu')
+      delSession('routelist')
       resolve()
     })
   },
@@ -74,7 +88,11 @@ const actions = {
   resetToken({ commit }) {
     return new Promise((resolve) => {
       commit('SET_TOKEN', '')
-      commit('SET_ROLES', [])
+      commit('SET_MENU', [])
+      commit('SET_ROUTELIST', [])
+      delSession('token')
+      delSession('menu')
+      delSession('routelist')
       resolve()
     })
   }
@@ -92,9 +110,33 @@ function handleMenu(menu) {
   })
   return menuList
 }
+
+// 遍历后台传来的路由字符串，转换为组件对象
+function filterAsyncRouter(asyncRouterMap) {
+  const accessedRouters = asyncRouterMap.map((item) => {
+    if (item.component === 'Layout') {
+      return {
+        name: item.name,
+        path: item.path,
+        component: Layout,
+        meta: { title: item.name, icon: item.icon, id: item.id },
+        children: item.children && item.children.length > 0 ? filterAsyncRouter(item.children) : []
+      }
+    }
+    return {
+      name: item.name,
+      path: item.path,
+      component: _import(item.component),
+      meta: { title: item.name, icon: item.icon, id: item.id }
+    }
+  })
+  return accessedRouters
+}
+
 export default {
   namespaced: true,
   state,
   mutations,
   actions
 }
+

@@ -48,6 +48,42 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/sys',
+    component: Layout,
+    children: [
+      {
+        path: 'menu',
+        component: () => import('@/views/sys/menu'),
+        name: 'Menu',
+        meta: { title: '菜单管理' }
+      },
+      {
+        path: 'log',
+        component: () => import('@/views/sys/log'),
+        name: 'Log',
+        meta: { title: '系统日志' }
+      }
+    ]
+  },
+  {
+    path: '/basic',
+    component: Layout,
+    children: [
+      {
+        path: 'users',
+        component: () => import('@/views/user/users'),
+        name: 'Users',
+        meta: { title: '用户信息' }
+      },
+      {
+        path: 'role',
+        component: () => import('@/views/user/role'),
+        name: 'Role',
+        meta: { title: '角色管理' }
+      }
+    ]
+  },
 
   {
     path: '/profile', // 个人说明页面
@@ -62,8 +98,8 @@ export const constantRoutes = [
         meta: { title: '个人说明', icon: 'user' }
       }
     ]
-  },
-  { path: '*', redirect: '/404', hidden: true }
+  }
+  // { path: '*', redirect: '/404', hidden: true }
 ]
 
 const createRouter = () => new Router({
